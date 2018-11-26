@@ -1,0 +1,82 @@
+Buen dia explico el funcionamiento del codigo que envie:
+
+El codigo fue realizado en Python con el framework Django y con una base de datos SQLite3:
+
+Carpetas y archivos encontrados en GitHub:
+
+1) media/films/image:
+
+Es la carpeta que contendra las imagenes que seran subidas a la aplicacion, todas las imagenes estaran guardadas en esta carpeta para mostrarlas
+
+2) Peliculas: 
+
+Es la APP creada para la aplicacion.
+En Django se crean APPs para separar el codigo dependiendo las tareas que se vayan a realizar, en este caso se creo para controlar todo el codigo referente a la aplicacion ya que no se es necesario realizar APPs diferentes
+
+En esta carpeta se encontraran:
+
+2.1) Las migraciones, la carpeta que guarda todos los cambios realizados para los modelos de las tablas
+2.2) Los templates, las vistas que seran mostradas al usuario, contiene un "base.html" que es la estructura base de todas lsa vistas (para no repetir codigo) y el resto de vistas
+  en "AddFilm.html" esta la vista y el formulario para agregar una nueva pelicula, trae un mensaje cuando es exitosa la creacion.
+  en "film.html" esta la vista para todas las peliculas, mostrando su nombre, codigo, genero, descripcion e imagenes, esta la opcion de agregar mas imagenes solo para esta pelicula
+  en "ImageUpload.html" esta la vista con el formulario para subir una imagen nueva especificando la pelicula por defecto (que sera la pelicula en donde estaban para agregar su imagen)
+  en "ImageUploadFilm.html" esta la vista con el formulario para subir una imagen y que el usuario pueda especificar a que pelicula quieren agregar la imagen (el link para esta vista solo se encuentra en el index.html)
+  en "Index.html" esta la vista inicial para mostrar el listado de peliculas con su genero, se puede acceder a cualquier peliucla que se desee.
+  
+2.3) forms.py, es un documento que cree para agregar una clase que realiza el guardado de las imagenes en la base de datos, en este archivo se especifica que datos tiene que agregar a la tabla Imagen 
+2.4) models.py es el archivo donde cree las dos tablas que use para la aplicacion, Pelicula e Imagen:
+  Pelicula, es una tabla que contiene los datos de las peliculas (nombre, codigo, genero, descripcion, fecha de creacion, fecha de modificacion, id) 
+  Imagen, es una tabla que contiene los datos de las imagenes guardadas (id, id_pelicula que es el id a la pelicula que corresponde, img que es el path donde esta siendo guardada la imagen)
+  
+2.5) views.py, es el archivo que contiene todos los controladores de la plataforma
+  home: manda la lista de peliculas que existen para mostrar en la pagina de inicio
+  addFilm: recoje los datos enviados desde el formulario por el metodo POST y los almacena en la base de datos, envia un mensaje si fueron exitosamente guardados
+  film: muestra la informacion de una pelicula en especifico la cual se decide por un parametro enviado desde la URL que es el id de la pelicula seleccionada, con este se muestra la informacion de la pelicula y las imagenes que tiene viculadas esa pelicula
+  UpladImage: Guarda la imagen mandada si es valida y redirecciona a la vista con la informacion de la pelicula (film.html)
+  UploadImageFilm: Guarda la imagen mandada si es valida y muestra un mensaje diciendo si se guardo o no exitosamente
+
+3) Work:
+
+Es el nombre del proyecto en esta carpeta esta guardad toda la configuracion del proyecto
+
+3.1) settings.py, es el archivo donde esta la configuracion del proyecto, se uso para decirle a Django que se iba a usar la APP de Peliculas y para agregar la direccion a los archivos /media/ para guardar las imagenes
+3.2) urls.py, es el archivo que contiene las rutas de la aplicacion, se definen a que url se van a enviar y que controlador va a tener esa vista, se especifico un "name" en los momentos de redireccionar a una pagina usar en "name" y una la "url"
+
+
+Explicacion del codigo:
+
+1) peliculas/views.py:
+
+from django.shortcuts import render, redirect -> importar librerias para realizar la presentacion de las vistas, realizar el render de un template o la redireccion a una url diferente 
+Pelicula.objects.all().order_by("-id") -> es la forma de solicitar datos a la base de datos usando SQLite3 y Django, se usa el nombre de la tabla seguido de un "objects" especificando que se usa el objeto y el query que se quiera usar en la aplicacion se uso:
+  .get(id=1)-> devuelve un dato dandole una condicion
+  .filter(nombre=juan) -> realiza un filtro y selecciona todos los datos que contengan esa condicion 
+  .all()-> devuleve todos los datos en la tabla
+  Pelicula.objects.create(columna=dato) -> forma de agregar datos a la tabla especificando el nombre de la columna con el dato que se va a guardar
+  
+  todos los datos se devuelven como objetos y se puede acceder a su contenido usando ".columna"
+
+codigo = request.POST["codigo"] -> esta es la forma de pedir los datos que son enviados desde el formulario por el metodo POST usando .POST["name del input"]
+render(request, "nombre_de_template.html", {'variable': dato}) -> esta es la forma de renderear una pagina, agregando el nombre de la vista que se va a usar y si se enviaran variables a la vista se envian como un diccionario diciendo primero "nombreVariableParaVista": DatoEnviado
+def film(request, user_id) -> esta funcion tiene como segundo parametro "user_id" el cual es un parametro que envio por la URL para saber que pelicula esta viendo en pantalla 
+PostForm(request.POST, request.FILES) -> se esta solicitando por medio de la clase PostForm que cree en form.py, se esta solicitando la imagen subida por el usuario
+form.save() -> guarda la imagen subida en la carpeta /media/films/images
+
+2) peliculas/forms.py
+
+from peliculas.models import Imagen -> se esta importando la tabla de "Imagen"
+fields = ('id_pelicula', 'img') -> son los datos que se reciben en la tabla y los que se llenaran por medio del formulario, el "id_pelicula" se usa para definir a que pelicula corresponde la imagen e "img" es para guardar el nombre de la imagen y su ruta
+
+3) peliculas/models.py
+
+codigo = models.CharField() -> se usa para crear una tabla y por medio de estos modelos se define que tipo de columna sera, en este caso se define el nombre de la columna "codigo" y luego se dice que sera un varchar en los parentisis se asigna el maximo de caracteres, si puede ser nulo, si puede estar en blanco, si es una PK, etc.
+img = models.ImageField(upload_to="films/image") -> en este caso "img" sera un archivo de imagen y se guardara en films/image y en la settings se especifico que todos estos archivos sean guardados en /media/ por tal moticvo queda en /media/films/image
+
+4) work/urls.py
+
+from peliculas import views as peliculas_views -> importar los controladores que esten en peliculas/views.py
+path('film/<int:user_id>', peliculas_views.film, name='film') -> se usa para definir la url que se usara para acceder a la vista, luego viene el controlador que se usa que en este caso es "film" que ya contiene el render de la vista y todo su controlador, al final se usa un "name" para asignarle un nombre a la url porsi la ruta llega a cambiar solo especificando el nombre se pueda acceder a esa ruta sin necesidad de cambiar siempre las rutas en los templates
+
+
+
+Muchas gracias por su atencion, espero les agrade mi trabajo.

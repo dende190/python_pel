@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="container mt-5 mb-5">
+        <h2 class="font-bold m-b-xs">Detalles de la pelicula:</h2>
+        <hr>
+        <dl>
+        	<dt style="font-size: 20px">Codigo: </dt>
+        	<dd style="font-size: 18px">{{ datos.codigo }}</dd>
+            <dt style="font-size: 20px">Nombre: </dt>
+            <dd style="font-size: 18px">{{ datos.nombre }}</dd>
+            <dt style="font-size: 20px">Genero: </dt>
+            <dd style="font-size: 18px">{{ datos.genero }}</dd>
+        </dl>
+        <h4>Descripcion de la pelicula:</h4>
+        <div>
+			{{ datos.descripcion }}
+        </div>
+        <hr>
+        <div class="wrapper wrapper-content">
+	        <div class="row">
+	            <div class="col-lg-12">
+		            <div class="ibox ">
+		                <div class="ibox-content">
+		                    <h2>Imagenes sobre la pelicula:</h2>
+		                    <div class="lightBoxGallery">
+								{% if imagen_film %}
+									{% for imag in imagen_film  %}
+                            			<a href="{{ imag.img.url }}" title="Image from Unsplash" data-gallery=""><img src="{{ imag.img.url }}"></a>
+									{% endfor %}
+                                {% else %}
+                                    <h4 class="text-center">No hay imagenes sobre la pelicula</h4>
+								{% endif %}
+	                            <div id="blueimp-gallery" class="blueimp-gallery">
+	                                <div class="slides"></div>
+	                                <h3 class="title"></h3>
+	                                <a class="close">×</a>
+	                                <a class="play-pause"></a>
+	                                <ol class="indicator"></ol>
+	                            </div>
+                        	</div>
+                    	</div>
+                	</div>
+            	</div>
+            </div>
+        </div>
+		<a href="{% url "imagenUpload" datos.id  %}" title=""><button class="btn btn-primary">Agregar una imagen nueva</button></a>
+	</div>
+    
+    <div class="mb-3">
+        <a href="{% url "home" %}"><button class="btn btn-primary">Volver a inicio</button></a>
+    </div>
+
+
+
+{% endblock content %}

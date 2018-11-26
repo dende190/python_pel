@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="container mb-5">
+		<h1>Agrega una imagen nueva para <strong>"{{ film.nombre }}"</strong></h1>
+		<div class="form-row">
+			<form method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<input type="hidden" name="id_pelicula" value="{{ film.id }}">
+				  <div class="form-group">
+				    <label for="img">Escoge una imagen: </label>
+				    <input type="file" class="form-control-file" id="img" name="img" required="">
+				  </div>
+				<button class="btn btn-primary" type="submit">Guardar</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<a href="{% url "film" film.id %}"><button class="btn btn-primary">Volver a pelicula</button></a>
+		<a href="{% url "home" %}"><button class="btn btn-primary">Volver a inicio</button></a>
+	</div>
+{% endblock content %}

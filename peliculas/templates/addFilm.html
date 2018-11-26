@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="container">
+		<h1>Agrega una nueva pelicula</h1>
+		{% if message %}
+			<div class="alert alert-success">
+				<h3>{{ message }}</h3>
+			</div>
+		{% endif %}
+		<div class="form-row">
+			<form action="{% url "addFilm" %}" method="post">
+				{% csrf_token %}
+				<div class="form-group">
+					<label for="codigo">Codigo</label>
+					<input type="text" name="codigo" id="codigo" class="form-control" placeholder="Codigo" required="">
+				</div>
+				<div class="form-group">
+					<label for="name">Nombre</label>
+					<input type="text" name="name" id="name" class="form-control" placeholder="Nombre" required="">
+				</div>
+				<div class="form-group">
+					<label for="desc">Descripcion</label>
+					<textarea name="desc" rows="5" cols="40" id="desc" class="form-control" placeholder="Descripcion" required=""></textarea>
+				</div>
+				<div class="form-group">
+					<label for="genero">Genero</label>
+					<select name="genero" id="genero" class="form-control" required="">
+						<option value="">seleccionar</option>
+						<option value="terror">terror</option>
+						<option value="comedia">comedia</option>
+						<option value="ficcion">ficcion</option>
+						<option value="suspenso">suspenso</option>
+						<option value="documental">documental</option>
+						<option value="animada">animada</option>
+					</select>
+				</div>
+				<button type="submit" class="btn btn-primary">Agregar</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<a href="{% url "home" %}"><button class="btn btn-primary">Volver a inicio</button></a>
+	</div>
+{% endblock content %}
